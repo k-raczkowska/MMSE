@@ -1,0 +1,27 @@
+warnings_are_errors: false
+os: linux
+language: r
+cache: packages
+sudo: false
+before_install:
+  - Rscript -e 'install.packages("devtools", repos = "http://cran.rstudio.com")'
+  - Rscript -e 'library(devtools)'
+  - Rscript -e 'install.packages(c("plyr", "geepack", "snowfall"), repos = "http://cran.rstudio.com")'
+  - Rscript -e 'install.packages("RMySQL", repos = "http://cran.rstudio.com")'
+services:
+  - mysql
+before_script:
+  - mysql -u root -e 'CREATE DATABASE travistorrent;'
+  - mysql -u root travistorrent < database/new_data.sql
+r_packages:
+  - devtools
+  - testthat
+  - httpuv
+r_github_packages:
+  - hadley/devtools
+  - hadley/testthat
+  - eddelbuettel/httpuv
+branches:
+  only:
+    - master
+
