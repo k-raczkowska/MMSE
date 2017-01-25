@@ -1,1 +1,2 @@
 exportPattern("^[[:alpha:]]+")
+export(lcpa, lccpa, lcfa, lccfa, scpa, scfa, tlb)
