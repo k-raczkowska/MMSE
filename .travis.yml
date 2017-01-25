@@ -1,7 +1,12 @@
 warnings_are_errors: false
+os: linux
 language: r
 cache: packages
 sudo: false
+r_packages:
+  - testthat
+r_github_packages:
+  - hadley/testthat
 branches:
   only:
     - master
