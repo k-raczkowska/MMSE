@@ -4,6 +4,7 @@
 
 load(file = 'queryRes.rda')
 
+
 lcpa <- function(currentBuild){
   projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
   projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
@@ -27,60 +28,10 @@ lcpa <- function(currentBuild){
   return(max)
 }
 
-lccpa <- function(currentBuild){
-  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
-  committer <- head(queryResult[queryResult$tr_build_id == currentBuild,]$author_mail,1)
-  projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
-  committerBuilds <- queryResult[queryResult$author_mail == committer,]
-  data <- committerBuilds[committerBuilds$tr_build_id < currentBuild,]
-  c = nrow(data)
-  print(c)
-  count = 0
-  max = 0
-  for(i in 1:c){
-    print(data[i,2])
-    if(data[i,2] == 'passed'){
-      count = count + 1
-    }
-    else
-      count = 0
-    if(count > max){
-      max = count
-    }
-  }
-  print(max)
-  return(max)
-}
-
 lcfa <- function(currentBuild){
   projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
   projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
   data <- projectBuilds[projectBuilds$tr_build_id < currentBuild,]
-  c = nrow(data)
-  print(c)
-  count = 0
-  max = 0
-  for(i in 1:c){
-    print(data[i,2])
-    if(data[i,2] == 'failed' || data[i,2] == 'errored'){
-      count = count + 1
-    }
-    else
-      count = 0
-    if(count > max){
-      max = count
-    }
-  }
-  print(max)
-  return(max)
-}
-
-lccfa <- function(currentBuild){
-  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
-  committer <- head(queryResult[queryResult$tr_build_id == currentBuild,]$author_mail,1)
-  projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
-  committerBuilds <- queryResult[queryResult$author_mail == committer,]
-  data <- committerBuilds[committerBuilds$tr_build_id < currentBuild,]
   c = nrow(data)
   print(c)
   count = 0
@@ -125,10 +76,64 @@ scpa <- function(currentBuild){
   return(min)
 }
 
+sccpa <- function(currentBuild){
+  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
+  committer <- head(queryResult[queryResult$tr_build_id == currentBuild,]$author_mail,1)
+  projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
+  committerBuilds <- queryResult[queryResult$author_mail == committer,]
+  data <- committerBuilds[committerBuilds$tr_build_id < currentBuild,]
+  c = nrow(data)
+  count = 0
+  min = c+1
+  for(i in 1:c){
+    if(data[i,2] == 'passed'){
+      count = count + 1
+    }
+    else{
+      if((count < min && count != 0)){
+        min = count
+      }
+      count = 0
+    }
+  }
+
+  if(min == c+1){
+    min = count
+  }
+  return(min)
+}
+
 scfa <- function(currentBuild){
   projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
   projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
   data <- projectBuilds[projectBuilds$tr_build_id < currentBuild,]
+  c = nrow(data)
+  count = 0
+  min = c+1
+  for(i in 1:c){
+    if(data[i,2] == 'failed' || data[i,2] == 'errored'){
+      count = count + 1
+    }
+    else{
+      if((count < min && count != 0)){
+        min = count
+      }
+      count = 0
+    }
+  }
+
+  if(min == c+1){
+    min = count
+  }
+  return(min)
+}
+
+sccfa <- function(currentBuild){
+  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
+  committer <- head(queryResult[queryResult$tr_build_id == currentBuild,]$author_mail,1)
+  projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
+  committerBuilds <- queryResult[queryResult$author_mail == committer,]
+  data <- committerBuilds[committerBuilds$tr_build_id < currentBuild,]
   c = nrow(data)
   count = 0
   min = c+1
