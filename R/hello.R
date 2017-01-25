@@ -75,6 +75,31 @@ lcfa <- function(currentBuild){
   return(max)
 }
 
+lccfa <- function(currentBuild){
+  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
+  committer <- head(queryResult[queryResult$tr_build_id == currentBuild,]$author_mail,1)
+  projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
+  committerBuilds <- queryResult[queryResult$author_mail == committer,]
+  data <- committerBuilds[committerBuilds$tr_build_id < currentBuild,]
+  c = nrow(data)
+  print(c)
+  count = 0
+  max = 0
+  for(i in 1:c){
+    print(data[i,2])
+    if(data[i,2] == 'failed' || data[i,2] == 'errored'){
+      count = count + 1
+    }
+    else
+      count = 0
+    if(count > max){
+      max = count
+    }
+  }
+  print(max)
+  return(max)
+}
+
 scpa <- function(currentBuild){
   projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
   projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
