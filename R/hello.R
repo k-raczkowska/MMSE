@@ -1,6 +1,6 @@
-mydb = RMySQL::dbConnect(RMySQL::MySQL(), user = 'root', password = 'master', dbname = 'travistorrent', host = 'localhost')
-queryResult = DBI::dbGetQuery(mydb, "select tr_build_id, tr_status, author_mail, git_commit, gh_project_name from travistorrent_27_10_2016 order by tr_build_id")
-save(queryResult, file = "queryRes.rda")
+#mydb = RMySQL::dbConnect(RMySQL::MySQL(), user = 'root', password = 'master', dbname = 'travistorrent', host = 'localhost')
+#queryResult = DBI::dbGetQuery(mydb, "select tr_build_id, tr_status, author_mail, git_commit, gh_project_name from travistorrent_27_10_2016 order by tr_build_id")
+#save(queryResult, file = "queryRes.rda")
 
 load(file = 'queryRes.rda')
 
