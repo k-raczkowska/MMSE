@@ -3,4 +3,8 @@ testthat::test_that('longest chain test', {
   testthat::expect_equal(scpa(1763098), 2)
   testthat::expect_equal(lcpa(1763098), 55)
   testthat::expect_equal(lcfa(1763098), 8)
+  testthat::expect_equal(lccfa(1763098), 8)
+  testthat::expect_equal(lccpa(1763098), 53)
+  testthat::expect_equal(sccfa(1763098), 1)
+  testthat::expect_equal(sccpa(1763098), 2)
 })
