@@ -10,5 +10,9 @@ LazyData: TRUE
 Suggests:
     testthat,
     gh,
-    RMySQL
+    RMySQL,
+    github,
+    DBI
+Remotes:
+    cscheid/rgithub
 RoxygenNote: 5.0.1
