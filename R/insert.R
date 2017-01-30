@@ -33,9 +33,9 @@ createRda <- function(dbName, dbHost, dbLogin, dbPassword, ttTableName, projects
   #commits = DBI::dbGetQuery(mydb, query)
 }
 
-insertAll(dbName = 'travistorrent', dbHost = 'localhost', dbLogin = 'root', dbPassword = 'master', client_id = 'eb0e2d954e3c072e0e05',
-            client_secret = '59e73934db0cc7e51363d7c3b59c6daa35629b2b', newTableName = 'xyz', ttTableName = 'temptable',
-              projects = "'xyz', '47deg/appsly-android-rest', 'ActiveJpa/activejpa'")
+#insertAll(dbName = 'travistorrent', dbHost = 'localhost', dbLogin = 'root', dbPassword = 'master', client_id = 'eb0e2d954e3c072e0e05',
+#            client_secret = '59e73934db0cc7e51363d7c3b59c6daa35629b2b', newTableName = 'xyz', ttTableName = 'temptable',
+#              projects = "'xyz', '47deg/appsly-android-rest', 'ActiveJpa/activejpa'")
 
-createRda(dbName = 'travistorrent', dbHost = 'localhost', dbLogin = 'root', dbPassword = 'master', ttTableName = 'temptable',
-          projects = "'xyz', '47deg/appsly-android-rest', 'ActiveJpa/activejpa'")
+#createRda(dbName = 'travistorrent', dbHost = 'localhost', dbLogin = 'root', dbPassword = 'master', ttTableName = 'temptable',
+#          projects = "'xyz', '47deg/appsly-android-rest', 'ActiveJpa/activejpa'")
