@@ -2,6 +2,10 @@
 #install.packages("jsonlite")
 #devtools::install_github("cscheid/rgithub", force=TRUE)
 #library('github')
+mydb = RMySQL::dbConnect(RMySQL::MySQL(), user = 'root', password = 'master', dbname = 'travistorrent', host = 'localhost')
+#queryResult = unique(DBI::dbGetQuery(mydb, "select tr_build_id, tr_status, author_mail, git_commit, gh_project_name, tr_started_at, gh_src_churn, gh_files_added, gh_files_modified, gh_files_deleted from travistorrent_27_10_2016 order by tr_build_id"))
+commits <- unique(DBI::dbGetQuery(mydb, "select tr_build_id, tr_status, git_commit, gh_project_name, tr_started_at, gh_src_churn, gh_files_added, gh_files_modified, gh_files_deleted from travistorrent order by tr_build_id"))
+save(commits, file = "data/alldata.rda", compress = "xz")
 
 #my_repos2 <- gh::gh("GET /users/:username/repos", username = "gaborcsardi",
 #                    type = "public", page = 2, .token = 'b1ada749c2afb717b3024e9e0231995d91fb7e75')
@@ -9,6 +13,7 @@
 #ctx <- github::create.github.context(access_token = 'b1ada749c2afb717b3024e9e0231995d91fb7e75', api_url = 'https://github.com/k-raczkowska/RMeter')
 #xx <- github::interactive.login(client_id = 'eb0e2d954e3c072e0e05', client_secret = '59e73934db0cc7e51363d7c3b59c6daa35629b2b')
 #commit <- github::get.commit(owner = 'cscheid', repo = 'rgithub', sha = 'b8e010f2ac477d33927e19f6c22fe016a4618cc8')
+#print(commit$ok)
 #commit2 <- github::get.commit(owner = 'cscheid', repo = 'rgithub', sha = 'b8e010f2ac477d33927e19f6c22fe016a4618cc8')
 #ctx <- github::create.github.context(client_id = 'eb0e2d954e3c072e0e05', client_secret = '59e73934db0cc7e51363d7c3b59c6daa35629b2b', api_url = 'https://github.com/k-raczkowska/RMeter')
 #print(commit$content$author$email)
@@ -16,10 +21,34 @@
 #vapply(my_repos2, "[[", "", "name")
 
 #pobiera dane z tabeli travistorrenta, buduje nowa tabele uzupelniona o kolumne author_mail, wypelnia tabele danymi na podstawie github api
-insertAll <- function(dbName, dbHost, dbLogin, dbPassword, client_id, client_secret, newTableName, ttTableName, projects){
-  mydb = RMySQL::dbConnect(RMySQL::MySQL(), user = dbLogin, password = dbPassword, dbname = dbName, host = dbHost)
-  query <- paste("select distinct git_commit from ", ttTableName, " where author_mail IS NULL AND gh_project_name in(", projects, ")", sep = "")
-  commits = DBI::dbGetQuery(mydb, query)
+#' @export
+insertAll <- function(dbName, dbHost, dbLogin, dbPassword, clientId, clientSecret, newTableName, ttTableName, projects){
+  mydb <- RMySQL::dbConnect(RMySQL::MySQL(), user = dbLogin, password = dbPassword, dbname = dbName, host = dbHost)
+  DBI::dbExecute(mydb, paste("DROP TABLE IF EXISTS ", newTableName, sep = ""))
+  DBI::dbExecute(mydb, paste("CREATE TABLE ", newTableName, " LIKE ", ttTableName, sep = ""))
+  DBI::dbExecute(mydb, paste("INSERT INTO ", newTableName, " SELECT * FROM ", ttTableName, " WHERE gh_project_name IN (", projects, ") GROUP BY tr_build_id", sep = ""))
+  DBI::dbExecute(mydb, paste("ALTER TABLE ", newTableName, " ADD COLUMN author_mail VARCHAR(100) ", sep = ""))
+  #print(q)
+  #DBI::dbExecute(mydb, )
+  query <- paste("select distinct git_commit, gh_project_name from ", newTableName, " where author_mail IS NULL ", sep = "")
+  commits <- DBI::dbGetQuery(mydb, query)
+  lenght <- nrow(commits)
+  if(lenght > 0){
+    xx <- github::interactive.login(client_id = clientId, client_secret = clientSecret)
+    for(i in 1:lenght){
+      gc <- commits[i,1]
+      pn <- commits[i,2]
+      splitted <- strsplit(pn, "/")[[1]]
+      own <- splitted[1]
+      rep <- splitted[2]
+      commit <- github::get.commit(owner = own, repo = rep, sha = gc)
+      if(commit$ok){
+        print(gc)
+        DBI::dbExecute(mydb, paste("UPDATE ", newTableName, " SET author_mail = '", commit$content$author$email, "' WHERE author_mail IS NULL
+                                   AND git_commit = '", gc, "'", sep = ""))
+      }
+    }
+  }
   print(nrow(commits))
 }
 
@@ -29,6 +58,7 @@ createRda <- function(dbName, dbHost, dbLogin, dbPassword, ttTableName, projects
   queryResult = unique(DBI::dbGetQuery(mydb, paste("select tr_build_id, tr_status, author_mail, git_commit, gh_project_name,
                                        tr_started_at, gh_src_churn, gh_files_added, gh_files_modified, gh_files_deleted
                                        from ", ttTableName, " where gh_project_name in (", projects, ") order by tr_build_id")))
+
   print(nrow(queryResult))
   #commits = DBI::dbGetQuery(mydb, query)
 }
