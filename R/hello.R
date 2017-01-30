@@ -1,9 +1,9 @@
 #mydb = RMySQL::dbConnect(RMySQL::MySQL(), user = 'root', password = 'master', dbname = 'travistorrent', host = 'localhost')
 #queryResult = unique(DBI::dbGetQuery(mydb, "select tr_build_id, tr_status, author_mail, git_commit, gh_project_name, tr_started_at, gh_src_churn, gh_files_added, gh_files_modified, gh_files_deleted from travistorrent_27_10_2016 order by tr_build_id"))
 #q = DBI::dbGetQuery(mydb, "select tr_build_id, tr_status, author_mail, git_commit, gh_project_name, tr_started_at from travistorrent_27_10_2016 where gh_project_name = '47deg/appsly-android-rest' order by tr_build_id")
-#save(queryResult, file = "queryRes.rda")
+#save(queryResult, file = "data/queryRes.rda", compress = "xz")
 
-load(file = 'queryRes.rda')
+load(file = 'data/queryRes.rda')
 
 #x <- unique(queryResult)
 
@@ -14,6 +14,28 @@ load(file = 'queryRes.rda')
 #}
 
 #replaceDataset(q)
+
+#' Prices of 50,000 round cut diamonds.
+#'
+#' A dataset containing the prices and other attributes of almost 54,000
+#' diamonds.
+#'
+#' @format A data frame with 19396 rows and 10 variables:
+#' \describe{
+#'   \item{author_mail}{price, in US dollars}
+#'   \item{gh_files_added}{price, in US dollars}
+#'   \item{gh_files_deleted}{price, in US dollars}
+#'   \item{gh_files_modified}{price, in US dollars}
+#'   \item{gh_project_name}{price, in US dollars}
+#'   \item{gh_src_churn}{price, in US dollars}
+#'   \item{git_commit}{price, in US dollars}
+#'   \item{tr_build_id}{price, in US dollars}
+#'   \item{tr_started_at}{price, in US dollars}
+#'   \item{tr_status}{weight of the diamond, in carats}
+#'   ...
+#' }
+#' @source \url{http://www.diamondse.info/}
+"queryResult"
 
 #' @importFrom utils head
 NULL
@@ -229,15 +251,16 @@ sccfa <- function(currentBuild){
 #' number or a vector
 #'
 #' @param currentBuild id of travis-ci build
+#' @param newData id of travis-ci build
 #' @export
 lccfa <- function(currentBuild, newData){
   if(missing(newData)){
     newData = queryResult
   }
-  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
-  committer <- head(queryResult[queryResult$tr_build_id == currentBuild,]$author_mail,1)
-  projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
-  committerBuilds <- queryResult[queryResult$author_mail == committer,]
+  projectName <- head(newData[newData$tr_build_id == currentBuild,]$gh_project_name,1)
+  committer <- head(newData[newData$tr_build_id == currentBuild,]$author_mail,1)
+  projectBuilds <- newData[newData$gh_project_name == projectName,]
+  committerBuilds <- projectBuilds[projectBuilds$author_mail == committer,]
   data <- committerBuilds[committerBuilds$tr_build_id < currentBuild,]
   c = nrow(data)
   #print(c)
@@ -419,6 +442,7 @@ weightedRate <- function(currentBuild){
 #' number or a vector
 #'
 #' @param currentBuild id of travis-ci build
+#' @param qresult id of travis-ci build
 #' @export
 lcpa2 <- function(currentBuild,qresult){
   projectName <- head(qresult[qresult$tr_build_id == currentBuild,]$gh_project_name,1)
@@ -443,6 +467,11 @@ lcpa2 <- function(currentBuild,qresult){
   return(max)
 }
 
+#' Compute the squared error
+#'
+#' This function computes the elementwise squared error for a
+#' number or a vector
+#'
 #' @export
 count <- function(){
   x <- nrow(queryResult)

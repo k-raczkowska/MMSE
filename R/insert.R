@@ -15,8 +15,27 @@
 
 #vapply(my_repos2, "[[", "", "name")
 
-insertAll <- function(dbName, dbHost, dbLogin, dbPassword, ghToken, newTableName, ttTableName){
+#pobiera dane z tabeli travistorrenta, buduje nowa tabele uzupelniona o kolumne author_mail, wypelnia tabele danymi na podstawie github api
+insertAll <- function(dbName, dbHost, dbLogin, dbPassword, client_id, client_secret, newTableName, ttTableName, projects){
   mydb = RMySQL::dbConnect(RMySQL::MySQL(), user = dbLogin, password = dbPassword, dbname = dbName, host = dbHost)
-  query <- paste("select distinct git_commit from ", ttTableName, " where author_mail IS NULL ", sep = "")
+  query <- paste("select distinct git_commit from ", ttTableName, " where author_mail IS NULL AND gh_project_name in(", projects, ")", sep = "")
   commits = DBI::dbGetQuery(mydb, query)
+  print(nrow(commits))
 }
+
+#pobiera dane z tabeli utworzonej przez insertAll i wrzuca to do pliku .rda
+createRda <- function(dbName, dbHost, dbLogin, dbPassword, ttTableName, projects, dataName){
+  mydb = RMySQL::dbConnect(RMySQL::MySQL(), user = dbLogin, password = dbPassword, dbname = dbName, host = dbHost)
+  queryResult = unique(DBI::dbGetQuery(mydb, paste("select tr_build_id, tr_status, author_mail, git_commit, gh_project_name,
+                                       tr_started_at, gh_src_churn, gh_files_added, gh_files_modified, gh_files_deleted
+                                       from ", ttTableName, " where gh_project_name in (", projects, ") order by tr_build_id")))
+  print(nrow(queryResult))
+  #commits = DBI::dbGetQuery(mydb, query)
+}
+
+insertAll(dbName = 'travistorrent', dbHost = 'localhost', dbLogin = 'root', dbPassword = 'master', client_id = 'eb0e2d954e3c072e0e05',
+            client_secret = '59e73934db0cc7e51363d7c3b59c6daa35629b2b', newTableName = 'xyz', ttTableName = 'temptable',
+              projects = "'xyz', '47deg/appsly-android-rest', 'ActiveJpa/activejpa'")
+
+createRda(dbName = 'travistorrent', dbHost = 'localhost', dbLogin = 'root', dbPassword = 'master', ttTableName = 'temptable',
+          projects = "'xyz', '47deg/appsly-android-rest', 'ActiveJpa/activejpa'")

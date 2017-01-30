@@ -8,6 +8,8 @@ lcpa2(currentBuild, qresult)
 }
 \arguments{
 \item{currentBuild}{id of travis-ci build}
+
+\item{qresult}{id of travis-ci build}
 }
 \description{
 This function computes the elementwise squared error for a
