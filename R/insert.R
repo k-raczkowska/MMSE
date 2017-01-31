@@ -64,7 +64,7 @@ insertFromRDA <- function(clientId, clientSecret, projects){
   #print(nrow(pr))
   leng <- nrow(pr)
   print(leng)
-  #if(leng > 0){
+  if(leng > 0){
     xx <- github::interactive.login(client_id = clientId, client_secret = clientSecret)
     for(i in 1:leng){
       #print("AAA")
@@ -88,7 +88,7 @@ insertFromRDA <- function(clientId, clientSecret, projects){
       }
     }
     #print(pr)
-  #}
+  }
     return(pr)
 }
 
