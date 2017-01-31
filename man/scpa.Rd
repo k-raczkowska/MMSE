@@ -2,7 +2,7 @@
 % Please edit documentation in R/hello.R
 \name{scpa}
 \alias{scpa}
-\title{Compute the squared error}
+\title{Compute the shortest chain of passed builds}
 \usage{
 scpa(currentBuild)
 }
@@ -10,7 +10,8 @@ scpa(currentBuild)
 \item{currentBuild}{id of travis-ci build}
 }
 \description{
-This function computes the elementwise squared error for a
-number or a vector
+This function computes the shortest chain of passed builds
+which ran on the same project as current build
+before current build
 }
 

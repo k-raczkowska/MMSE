@@ -2,7 +2,7 @@
 % Please edit documentation in R/hello.R
 \name{sccpa}
 \alias{sccpa}
-\title{Compute the squared error}
+\title{Compute the shortest chain of past passed committer's builds}
 \usage{
 sccpa(currentBuild)
 }
@@ -10,7 +10,12 @@ sccpa(currentBuild)
 \item{currentBuild}{id of travis-ci build}
 }
 \description{
-This function computes the elementwise squared error for a
-number or a vector
+This function computes the shortest chain of past passed builds.
+Past passed builds are builds which:
+\itemize{
+ \item{ran on the same repository as current build}
+ \item{and commit which triggered these builds was made
+ by the same person who made commit which triggered current build}
+}
 }
 

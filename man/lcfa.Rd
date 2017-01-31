@@ -2,7 +2,7 @@
 % Please edit documentation in R/hello.R
 \name{lcfa}
 \alias{lcfa}
-\title{Compute the squared error}
+\title{Compute the longest chain of passed builds}
 \usage{
 lcfa(currentBuild)
 }
@@ -10,7 +10,9 @@ lcfa(currentBuild)
 \item{currentBuild}{id of travis-ci build}
 }
 \description{
-This function computes the elementwise squared error for a
-number or a vector
+This function computes the longest chain of failed
+and errored builds
+which ran on the same project as current build
+before current build
 }
 

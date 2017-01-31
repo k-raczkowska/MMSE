@@ -2,7 +2,7 @@
 % Please edit documentation in R/hello.R
 \name{lcpa}
 \alias{lcpa}
-\title{Compute the squared error}
+\title{Compute the longest chain of past passed builds}
 \usage{
 lcpa(currentBuild)
 }
@@ -10,7 +10,11 @@ lcpa(currentBuild)
 \item{currentBuild}{id of travis-ci build}
 }
 \description{
-This function computes the elementwise squared error for a
-number or a vector
+This function computes the shortest chain of past passed builds.
+Past passed builds are builds which ran on the same repository
+as current build
+}
+\examples{
+lcpa(1763098)
 }
 

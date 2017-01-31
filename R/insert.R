@@ -20,7 +20,12 @@
 
 #vapply(my_repos2, "[[", "", "name")
 
-load(file = "data/alldata.rda")
+#commits < data.frame()
+#load(file = "data/alldata.rda")
+
+
+#load(file = "C:/Users/Karolina R/Documents/alldata.rda")
+
 
 #pobiera dane z tabeli travistorrenta, buduje nowa tabele uzupelniona o kolumne author_mail, wypelnia tabele danymi na podstawie github api
 #' @export
@@ -57,6 +62,7 @@ insertFromDB <- function(dbName, dbHost, dbLogin, dbPassword, clientId, clientSe
 
 #' @export
 insertFromRDA <- function(clientId, clientSecret, projects){
+  if(exists("commits")){
   pp <- strsplit(gsub(" ", "", projects), ",")[[1]]
   #print(pp)
   pr <- commits[commits$gh_project_name %in% pp,]
@@ -90,6 +96,7 @@ insertFromRDA <- function(clientId, clientSecret, projects){
     #print(pr)
   }
     return(pr)
+  }
 }
 
 #' @export
@@ -100,7 +107,7 @@ replaceDatasetRDA <- function(queryResult){
 }
 
 #pobiera dane z tabeli utworzonej przez insertAll i wrzuca to do pliku .rda
-createRda <- function(dbName, dbHost, dbLogin, dbPassword, ttTableName, projects){
+createRda <- function(dbName, dbHost, dbLogin, dbPassword, ttTableName, projects, filePath){
   mydb = RMySQL::dbConnect(RMySQL::MySQL(), user = dbLogin, password = dbPassword, dbname = dbName, host = dbHost)
   queryResult = unique(DBI::dbGetQuery(mydb, paste("select tr_build_id, tr_status, author_mail, git_commit, gh_project_name,
                                        tr_started_at, gh_src_churn, gh_files_added, gh_files_modified, gh_files_deleted

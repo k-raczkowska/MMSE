@@ -5,304 +5,24 @@
 
 load(file = 'data/queryRes.rda')
 
-#x <- unique(queryResult)
-
-#replaceDataset <- function(newData){
-#  queryResult = newData
-#  save(newData, file = "queryRes.rda")
-#  load(file = "queryRes.rda")
-#}
-
-#replaceDataset(q)
-
-
-
 #' @importFrom utils head
 NULL
 
-#' Compute the squared error
-#'
-#' This function computes the elementwise squared error for a
-#' number or a vector
-#'
-#' @param currentBuild id of travis-ci build
-#' @export
-lcpa <- function(currentBuild){
-  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
-  projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
-  data <- projectBuilds[projectBuilds$tr_build_id < currentBuild,]
-  c = nrow(data)
-  #print(c)
-  count = 0
-  max = 0
-  if(c > 0){
-    for(i in 1:c){
-      #print(data[i,2])
-      if(data[i,2] == 'passed'){
-        count = count + 1
-      }
-      else
-        count = 0
-      if(count > max){
-        max = count
-      }
-    }
-  }
-  #print(max)
-  return(max)
-}
 
 
-#' Compute the squared error
-#'
-#' This function computes the elementwise squared error for a
-#' number or a vector
-#'
-#' @param currentBuild id of travis-ci build
-#' @export
-lcfa <- function(currentBuild){
-  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
-  projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
-  data <- projectBuilds[projectBuilds$tr_build_id < currentBuild,]
-  c = nrow(data)
-  #print(c)
-  count = 0
-  max = 0
-  if(c > 0){
-    for(i in 1:c){
-      #print(data[i,2])
-      if(data[i,2] == 'failed' || data[i,2] == 'errored'){
-        count = count + 1
-      }
-      else
-        count = 0
-      if(count > max){
-        max = count
-      }
-    }
-  }
-  #print(max)
-  return(max)
-}
 
-#' Compute the squared error
-#'
-#' This function computes the elementwise squared error for a
-#' number or a vector
-#'
-#' @param currentBuild id of travis-ci build
-#' @export
-scpa <- function(currentBuild){
-  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
-  projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
-  data <- projectBuilds[projectBuilds$tr_build_id < currentBuild,]
-  c = nrow(data)
-  count = 0
-  min = c+1
-  if(c > 0){
-    for(i in 1:c){
-      if(data[i,2] == 'passed'){
-        count = count + 1
-      }
-      else{
-        if((count < min && count != 0)){
-          min = count
-        }
-        count = 0
-      }
-    }
-  }
 
-  if(min == c+1){
-    min = count
-  }
-  return(min)
-}
 
-#' Compute the squared error
-#'
-#' This function computes the elementwise squared error for a
-#' number or a vector
-#'
-#' @param currentBuild id of travis-ci build
-#' @export
-sccpa <- function(currentBuild){
-  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
-  committer <- head(queryResult[queryResult$tr_build_id == currentBuild,]$author_mail,1)
-  projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
-  committerBuilds <- queryResult[queryResult$author_mail == committer,]
-  data <- committerBuilds[committerBuilds$tr_build_id < currentBuild,]
-  c = nrow(data)
-  count = 0
-  min = c+1
-  if(c > 0){
-    for(i in 1:c){
-      if(data[i,2] == 'passed'){
-        count = count + 1
-      }
-      else{
-        if((count < min && count != 0)){
-          min = count
-        }
-        count = 0
-      }
-    }
-  }
 
-  if(min == c+1){
-    min = count
-  }
-  return(min)
-}
 
-#' Compute the squared error
-#'
-#' This function computes the elementwise squared error for a
-#' number or a vector
-#'
-#' @param currentBuild id of travis-ci build
-#' @export
-scfa <- function(currentBuild){
-  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
-  projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
-  data <- projectBuilds[projectBuilds$tr_build_id < currentBuild,]
-  c = nrow(data)
-  count = 0
-  min = c+1
-  if(c > 0){
-    for(i in 1:c){
-      if(data[i,2] == 'failed' || data[i,2] == 'errored'){
-        count = count + 1
-      }
-      else{
-        if((count < min && count != 0)){
-          min = count
-        }
-        count = 0
-      }
-    }
-  }
 
-  if(min == c+1){
-    min = count
-  }
-  return(min)
-}
-
-#' Compute the squared error
-#'
-#' This function computes the elementwise squared error for a
-#' number or a vector
-#'
-#' @param currentBuild id of travis-ci build
-#' @export
-sccfa <- function(currentBuild){
-  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
-  committer <- head(queryResult[queryResult$tr_build_id == currentBuild,]$author_mail,1)
-  projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
-  committerBuilds <- queryResult[queryResult$author_mail == committer,]
-  data <- committerBuilds[committerBuilds$tr_build_id < currentBuild,]
-  c = nrow(data)
-  count = 0
-  min = c+1
-  if(c > 0){
-    for(i in 1:c){
-      if(data[i,2] == 'failed' || data[i,2] == 'errored'){
-        count = count + 1
-      }
-      else{
-        if((count < min && count != 0)){
-          min = count
-        }
-        count = 0
-      }
-    }
-  }
-
-  if(min == c+1){
-    min = count
-  }
-  return(min)
-}
-
-#' Compute the squared error
-#'
-#' This function computes the elementwise squared error for a
-#' number or a vector
-#'
-#' @param currentBuild id of travis-ci build
-#' @param newData id of travis-ci build
-#' @export
-lccfa <- function(currentBuild, newData){
-  if(missing(newData)){
-    newData = queryResult
-  }
-  projectName <- head(newData[newData$tr_build_id == currentBuild,]$gh_project_name,1)
-  committer <- head(newData[newData$tr_build_id == currentBuild,]$author_mail,1)
-  projectBuilds <- newData[newData$gh_project_name == projectName,]
-  committerBuilds <- projectBuilds[projectBuilds$author_mail == committer,]
-  data <- committerBuilds[committerBuilds$tr_build_id < currentBuild,]
-  c = nrow(data)
-  #print(c)
-  count = 0
-  max = 0
-  if(c > 0){
-    for(i in 1:c){
-      #print(i)
-      #print(data[i,2])
-      if(data[i,2] == 'failed' || data[i,2] == 'errored'){
-        count = count + 1
-      }
-      else
-        count = 0
-      if(count > max){
-        max = count
-      }
-    }
-  }
-  #print(currentBuild)
-  #print(max)
-  return(max)
-}
 
 #abc <- queryResult$tr_build_id
 #for(i in 1:length(abc)){
 #  lccfa(abc[i])
 #}
 
-#' Compute the squared error
-#'
-#' This function computes the elementwise squared error for a
-#' number or a vector
-#'
-#' @param currentBuild id of travis-ci build
-#' @export
-lccpa <- function(currentBuild){
-  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
-  committer <- head(queryResult[queryResult$tr_build_id == currentBuild,]$author_mail,1)
-  projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
-  committerBuilds <- queryResult[queryResult$author_mail == committer,]
-  data <- committerBuilds[committerBuilds$tr_build_id < currentBuild,]
-  c = nrow(data)
-  #print(c)
-  count = 0
-  max = 0
-  if(c > 0){
-    for(i in 1:c){
-      #print(data[i,2])
-      if(data[i,2] == 'passed'){
-        count = count + 1
-      }
-      else
-        count = 0
-      if(count > max){
-        max = count
-      }
-    }
-  }
-  #print(max)
-  return(max)
-}
+
 
 #' Compute the squared error
 #'
@@ -399,10 +119,10 @@ weightedRate <- function(currentBuild){
     for(i in 1:c){
       if(projectBuilds[i,2] == 'passed'){
         #code churn
-        weightPassed = weightPassed + projectBuilds[i,7]/(projectBuilds[i,8]+projectBuilds[i,9]+projectBuilds[i,10])
+        weightPassed = weightPassed + projectBuilds[i,7]
       }
       else if(projectBuilds[i,2] == 'errored' || projectBuilds[i,2] == 'failed'){
-        weightFailed = weightFailed + projectBuilds[i,7]/(projectBuilds[i,8]+projectBuilds[i,9]+projectBuilds[i,10])
+        weightFailed = weightFailed + projectBuilds[i,7]
       }
     }
   }
@@ -414,38 +134,7 @@ weightedRate <- function(currentBuild){
   }
 }
 
-#tlb(1763098)
 
-#' Compute the squared error
-#'
-#' This function computes the elementwise squared error for a
-#' number or a vector
-#'
-#' @param currentBuild id of travis-ci build
-#' @param qresult id of travis-ci build
-#' @export
-lcpa2 <- function(currentBuild,qresult){
-  projectName <- head(qresult[qresult$tr_build_id == currentBuild,]$gh_project_name,1)
-  projectBuilds <- qresult[qresult$gh_project_name == projectName,]
-  data <- projectBuilds[projectBuilds$tr_build_id < currentBuild,]
-  c = nrow(data)
-  #print(c)
-  count = 0
-  max = 0
-  for(i in 1:c){
-    #print(data[i,2])
-    if(data[i,2] == 'passed'){
-      count = count + 1
-    }
-    else
-      count = 0
-    if(count > max){
-      max = count
-    }
-  }
-  #print(max)
-  return(max)
-}
 
 #' Compute the squared error
 #'
@@ -454,21 +143,36 @@ lcpa2 <- function(currentBuild,qresult){
 #'
 #' @export
 count <- function(){
+  result <- queryResult$tr_build_id
   x <- nrow(queryResult)
+  result <- data.frame(
+    build=numeric(x),
+    lccfa=numeric(x),
+    lccpa=numeric(x),
+    lcpa=numeric(x),
+    lcfa=numeric(x),
+    rate=numeric(x),
+    sccfa=numeric(x),
+    sccpa=numeric(x),
+    scfa=numeric(x),
+    scpa=numeric(x),
+    tlfb=numeric(x),
+    tlpb=numeric(x),
+    wr=numeric(x)
+  )
   for(i in 1:x){
     build <- queryResult[i,1]
-    print(paste("NUMER: ",i))
-    print(MetricsR::lccfa(build))
-    print(MetricsR::lccpa(build))
-    print(MetricsR::lcpa(build))
-    print(MetricsR::lcfa(build))
-    print(MetricsR::rate(build))
-    print(MetricsR::sccfa(build))
-    print(MetricsR::sccpa(build))
-    print(MetricsR::scfa(build))
-    print(MetricsR::scpa(build))
-    print(MetricsR::tlfb(build))
-    print(MetricsR::tlpb(build))
-    print(MetricsR::weightedRate(build))
+    result$lccfa[i] <- lccfa(build)
+    result$lccpa[i] <- lccpa(build)
+    result$lcpa[i] <- lcpa(build)
+    result$lcfa[i] <- lcfa(build)
+    result$rate[i] <- rate(build)
+    result$sccfa[i] <- sccfa(build)
+    result$sccpa[i] <- sccpa(build)
+    result$scfa[i] <- scfa(build)
+    result$scpa[i] <- scpa(build)
+    result$tlfb[i] <- tlfb(build)
+    result$tlpb[i] <- tlpb(build)
   }
+  return(result)
 }
