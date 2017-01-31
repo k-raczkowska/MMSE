@@ -12,7 +12,7 @@
 #' }
 #'
 #' @param currentBuild id of travis-ci build
-#' @examples lccpa(1763098)
+#' @examples lccpa(123456)
 #' @export
 lccpa <- function(currentBuild){
   projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
@@ -51,15 +51,12 @@ lccpa <- function(currentBuild){
 #' }
 #'
 #' @param currentBuild id of travis-ci build
-#' @examples lccfa(1763098)
+#' @examples lccfa(123456)
 #' @export
-lccfa <- function(currentBuild, newData){
-  if(missing(newData)){
-    newData = queryResult
-  }
-  projectName <- head(newData[newData$tr_build_id == currentBuild,]$gh_project_name,1)
-  committer <- head(newData[newData$tr_build_id == currentBuild,]$author_mail,1)
-  projectBuilds <- newData[newData$gh_project_name == projectName,]
+lccfa <- function(currentBuild){
+  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
+  committer <- head(queryResult[queryResult$tr_build_id == currentBuild,]$author_mail,1)
+  projectBuilds <- queryResult[queryResult$gh_project_name == projectName,]
   committerBuilds <- projectBuilds[projectBuilds$author_mail == committer,]
   data <- committerBuilds[committerBuilds$tr_build_id < currentBuild,]
   c = nrow(data)
@@ -93,7 +90,7 @@ lccfa <- function(currentBuild, newData){
 #' }
 #'
 #' @param currentBuild id of travis-ci build
-#' @examples sccpa(1763098)
+#' @examples sccpa(123456)
 #' @export
 sccpa <- function(currentBuild){
   projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
@@ -137,7 +134,7 @@ sccpa <- function(currentBuild){
 #' }
 #'
 #' @param currentBuild id of travis-ci build
-#' @examples sccfa(1763098)
+#' @examples sccfa(123456)
 #' @export
 sccfa <- function(currentBuild){
   projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
@@ -166,4 +163,30 @@ sccfa <- function(currentBuild){
     min = count
   }
   return(min)
+}
+
+#' Compute the ratio of passed build to all builds on repository
+#'
+#' This function computes the ratio of passed builds to all builds
+#' on repository. History of builds is taken from current build
+#'
+#' @param currentBuild id of travis-ci build
+#' @examples lccfa(123456)
+#' @export
+rate <- function(currentBuild){
+  projectName <- head(queryResult[queryResult$tr_build_id == currentBuild,]$gh_project_name,1)
+  committer <- head(queryResult[queryResult$tr_build_id == currentBuild,]$author_mail,1)
+  byName <- queryResult[queryResult$gh_project_name == projectName,]
+  byCommitter <- byName[byName$author_mail == committer,]
+  projectBuilds <- byCommitter[byCommitter$tr_build_id < currentBuild,]
+  passed <- projectBuilds[projectBuilds$tr_status == 'passed',]
+  failed <- projectBuilds[projectBuilds$tr_status == 'errored' | projectBuilds$tr_status == 'failed',]
+  p <- nrow(passed)
+  f <- nrow(failed)
+  if(p+f > 0){
+    return(p/(p+f))
+  }
+  else{
+    return(0)
+  }
 }
