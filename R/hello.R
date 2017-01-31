@@ -15,27 +15,7 @@ load(file = 'data/queryRes.rda')
 
 #replaceDataset(q)
 
-#' Prices of 50,000 round cut diamonds.
-#'
-#' A dataset containing the prices and other attributes of almost 54,000
-#' diamonds.
-#'
-#' @format A data frame with 19396 rows and 10 variables:
-#' \describe{
-#'   \item{author_mail}{price, in US dollars}
-#'   \item{gh_files_added}{price, in US dollars}
-#'   \item{gh_files_deleted}{price, in US dollars}
-#'   \item{gh_files_modified}{price, in US dollars}
-#'   \item{gh_project_name}{price, in US dollars}
-#'   \item{gh_src_churn}{price, in US dollars}
-#'   \item{git_commit}{price, in US dollars}
-#'   \item{tr_build_id}{price, in US dollars}
-#'   \item{tr_started_at}{price, in US dollars}
-#'   \item{tr_status}{weight of the diamond, in carats}
-#'   ...
-#' }
-#' @source \url{http://www.diamondse.info/}
-"queryResult"
+
 
 #' @importFrom utils head
 NULL

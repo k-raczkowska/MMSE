@@ -2,10 +2,10 @@
 #install.packages("jsonlite")
 #devtools::install_github("cscheid/rgithub", force=TRUE)
 #library('github')
-mydb = RMySQL::dbConnect(RMySQL::MySQL(), user = 'root', password = 'master', dbname = 'travistorrent', host = 'localhost')
+#mydb = RMySQL::dbConnect(RMySQL::MySQL(), user = 'root', password = 'master', dbname = 'travistorrent', host = 'localhost')
 #queryResult = unique(DBI::dbGetQuery(mydb, "select tr_build_id, tr_status, author_mail, git_commit, gh_project_name, tr_started_at, gh_src_churn, gh_files_added, gh_files_modified, gh_files_deleted from travistorrent_27_10_2016 order by tr_build_id"))
-commits <- unique(DBI::dbGetQuery(mydb, "select tr_build_id, tr_status, git_commit, gh_project_name, tr_started_at, gh_src_churn, gh_files_added, gh_files_modified, gh_files_deleted from travistorrent order by tr_build_id"))
-save(commits, file = "data/alldata.rda", compress = "xz")
+#commits <- unique(DBI::dbGetQuery(mydb, "select tr_build_id, tr_status, git_commit, gh_project_name, tr_started_at, gh_src_churn, gh_files_added, gh_files_modified, gh_files_deleted from travistorrent order by tr_build_id"))
+#save(commits, file = "data/alldata.rda", compress = "xz")
 
 #my_repos2 <- gh::gh("GET /users/:username/repos", username = "gaborcsardi",
 #                    type = "public", page = 2, .token = 'b1ada749c2afb717b3024e9e0231995d91fb7e75')
@@ -20,9 +20,11 @@ save(commits, file = "data/alldata.rda", compress = "xz")
 
 #vapply(my_repos2, "[[", "", "name")
 
+load(file = "data/alldata.rda")
+
 #pobiera dane z tabeli travistorrenta, buduje nowa tabele uzupelniona o kolumne author_mail, wypelnia tabele danymi na podstawie github api
 #' @export
-insertAll <- function(dbName, dbHost, dbLogin, dbPassword, clientId, clientSecret, newTableName, ttTableName, projects){
+insertFromDB <- function(dbName, dbHost, dbLogin, dbPassword, clientId, clientSecret, newTableName, ttTableName, projects){
   mydb <- RMySQL::dbConnect(RMySQL::MySQL(), user = dbLogin, password = dbPassword, dbname = dbName, host = dbHost)
   DBI::dbExecute(mydb, paste("DROP TABLE IF EXISTS ", newTableName, sep = ""))
   DBI::dbExecute(mydb, paste("CREATE TABLE ", newTableName, " LIKE ", ttTableName, sep = ""))
@@ -50,17 +52,62 @@ insertAll <- function(dbName, dbHost, dbLogin, dbPassword, clientId, clientSecre
     }
   }
   print(nrow(commits))
+  return(commits)
+}
+
+#' @export
+insertFromRDA <- function(clientId, clientSecret, projects){
+  pp <- strsplit(gsub(" ", "", projects), ",")[[1]]
+  #print(pp)
+  pr <- commits[commits$gh_project_name %in% pp,]
+  pr["author_mail"] <- ""
+  #print(nrow(pr))
+  leng <- nrow(pr)
+  print(leng)
+  #if(leng > 0){
+    xx <- github::interactive.login(client_id = clientId, client_secret = clientSecret)
+    for(i in 1:leng){
+      #print("AAA")
+      gc <- pr$git_commit[i]
+      pn <- pr$gh_project_name[i]
+      #print(gc)
+      #print(pr)
+      splitted <- strsplit(pn, "/")[[1]]
+      own <- splitted[1]
+      rep <- splitted[2]
+      commit <- github::get.commit(owner = own, repo = rep, sha = gc)
+      print(paste(pn, "/commits/", gc, sep = ""))
+      print(commit$ok)
+      if(commit$ok){
+        print(gc)
+        mail <- commit$content$author$email
+        print(mail)
+        pr$author_mail[i] <- mail
+        #DBI::dbExecute(mydb, paste("UPDATE ", newTableName, " SET author_mail = '", commit$content$author$email, "' WHERE author_mail IS NULL
+        #                           AND git_commit = '", gc, "'", sep = ""))
+      }
+    }
+    #print(pr)
+  #}
+    return(pr)
+}
+
+#' @export
+replaceDatasetRDA <- function(queryResult){
+  save(queryResult, file = "data/queryRes.rda", compress = "xz")
+  load(file = "data/queryRes.rda")
+  return(queryResult)
 }
 
 #pobiera dane z tabeli utworzonej przez insertAll i wrzuca to do pliku .rda
-createRda <- function(dbName, dbHost, dbLogin, dbPassword, ttTableName, projects, dataName){
+createRda <- function(dbName, dbHost, dbLogin, dbPassword, ttTableName, projects){
   mydb = RMySQL::dbConnect(RMySQL::MySQL(), user = dbLogin, password = dbPassword, dbname = dbName, host = dbHost)
   queryResult = unique(DBI::dbGetQuery(mydb, paste("select tr_build_id, tr_status, author_mail, git_commit, gh_project_name,
                                        tr_started_at, gh_src_churn, gh_files_added, gh_files_modified, gh_files_deleted
                                        from ", ttTableName, " where gh_project_name in (", projects, ") order by tr_build_id")))
 
   print(nrow(queryResult))
-  #commits = DBI::dbGetQuery(mydb, query)
+  #commits = DBI::dbGetQuery(mydb, query)M
 }
 
 #insertAll(dbName = 'travistorrent', dbHost = 'localhost', dbLogin = 'root', dbPassword = 'master', client_id = 'eb0e2d954e3c072e0e05',
