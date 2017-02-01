@@ -3,7 +3,4 @@
 #q = DBI::dbGetQuery(mydb, "select tr_build_id, tr_status, author_mail, git_commit, gh_project_name, tr_started_at from travistorrent_27_10_2016 where gh_project_name = '47deg/appsly-android-rest' order by tr_build_id")
 #save(queryResult, file = "data/queryRes.rda", compress = "xz")
 
-load(file = 'data/queryRes.rda')
 
-#' @importFrom utils head
-NULL

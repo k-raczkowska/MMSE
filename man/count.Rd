@@ -2,9 +2,9 @@
 % Please edit documentation in R/generateData.R
 \name{count}
 \alias{count}
-\title{Generate a data.frame with metrics computed from dataset
-as columns and with additional column with current build id
-columns are:
+\title{Function generates a data frame with metrics computed from dataset
+as columns and with additional column with current build id.
+Columns of data frame are presented below:
 \itemize{
  \item{build}
  \item{lccfa}
@@ -20,12 +20,15 @@ columns are:
  \item{tlpb}
  }}
 \usage{
-count()
+count(n = nrow(queryResult))
+}
+\arguments{
+\item{n}{number of rows of queryResult}
 }
 \description{
-Generate a data.frame with metrics computed from dataset
-as columns and with additional column with current build id
-columns are:
+Function generates a data frame with metrics computed from dataset
+as columns and with additional column with current build id.
+Columns of data frame are presented below:
 \itemize{
  \item{build}
  \item{lccfa}
@@ -40,5 +43,8 @@ columns are:
  \item{tlfb}
  \item{tlpb}
  }
+}
+\examples{
+count(10)
 }
 
