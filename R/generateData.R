@@ -102,6 +102,8 @@ insertToDB <- function(dbName, dbHost, dbLogin, dbPassword, clientId, clientSecr
   return(selectRes)
 }
 
+#' Function replaces dataset queryResult with another data, selected by user
+#' @param queryResult new data
 #' @export
 replaceDatasetRDA <- function(queryResult){
   save(queryResult, file = "data/queryRes.rda", compress = "xz")
@@ -149,6 +151,30 @@ selectFromRDA <- function(clientId, clientSecret, projects){
     }
     return(pr)
   }
+}
+
+#' Function selects data from customTravisTorrent table and returns it
+#'
+#' @param dbName name of database
+#' @param dbHost host of database
+#' @param dbLogin user of database
+#' @param dbPassword user's password to connect to database
+#' @param ttTableName table from which you want to select
+#' @export
+createDefaultQueryResult <- function(dbName, dbHost, dbLogin, dbPassword, ttTableName){
+  mydb = RMySQL::dbConnect(RMySQL::MySQL(), user = dbLogin, password = dbPassword, dbname = dbName, host = dbHost)
+  queryResult = unique(DBI::dbGetQuery(mydb, paste("select tr_build_id, tr_status, author_mail, git_commit, gh_project_name, tr_started_at,
+                                       gh_src_churn, gh_files_added, gh_files_modified, gh_files_deleted from ", ttTableName,
+                                       " where gh_project_name in ('47deg/appsly-android-rest','ActiveJpa/activejpa',
+                                       'AzureAD/azure-activedirectory-library-for-android','BaseXdb/basex','Berico-Technologies/CLAVIN',
+                                       'BuildCraft/BuildCraft','CloudifySource/cloudify','CyberAgent/android-gpuimage','DSpace/DSpace',
+                                       'GoogleCloudPlatform/DataflowJavaSDK','HubSpot/Singularity','JakeWharton/u2020','Jasig/cas',
+                                       'ReactiveX/RxJava','SpongePowered/Sponge','SpongePowered/SpongeAPI','bitcoinj/bitcoinj',
+                                       'bndtools/bnd','broadinstitute/picard','caelum/vraptor4','dropwizard/dropwizard','facebook/presto',
+                                       'geoserver/geoserver','google/bazel','google/closure-compiler','gradle/gradle',
+                                       'igniterealtime/Openfire','mozilla/MozStumbler','timmolter/XChange') order by tr_build_id", sep = "")))
+  save(queryResult, file = "data/queryRes.rda", compress = "xz")
+  return(queryResult)
 }
 
 isConnection <- function(){
